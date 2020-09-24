@@ -21,6 +21,7 @@ RTC_OBJC_EXPORT
   [RTCVideoTrack addRenderer] instead.
  */
 - (void)attach:(NSObject<RTCVideoRenderer>*)renderer;
+- (void)detach;
 /**
   @brief Returns a user-defined attribute dictionary.
   @details These attributes are defined by publisher. P2P mode always return

@@ -27,6 +27,8 @@ class ConferenceClientObserverObjcImpl : public ConferenceClientObserver {
   virtual void OnParticipantJoined(
       std::shared_ptr<owt::conference::Participant> user) override;
   virtual void OnServerDisconnected() override;
+  virtual void OnServerReconnecting() override;
+  virtual void OnServerReconnected() override;
  private:
   void AddRemoteStreamToMap(const std::string& id, OWTRemoteStream* stream);
   void TriggerOnStreamRemoved(

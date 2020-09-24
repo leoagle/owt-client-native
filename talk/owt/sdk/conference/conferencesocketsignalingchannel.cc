@@ -17,7 +17,9 @@
 #include "webrtc/rtc_base/logging.h"
 #include "webrtc/rtc_base/strings/json.h"
 #include "webrtc/rtc_base/time_utils.h"
+#include "talk/owt/include/sio_client.h"
 using namespace rtc;
+using namespace sio;
 namespace owt {
 namespace conference {
 #define SIGNALING_PROTOCOL_VERSION "1.1"
@@ -142,6 +144,14 @@ void ConferenceSocketSignalingChannel::Connect(
           that->TriggerOnServerDisconnected();
         }
       });
+  socket_client_->set_close_listener(
+      [weak_this](sio::client::close_reason const& reason) {
+        RTC_LOG(LS_INFO) << "Socket.IO disconnected " << reason;
+        auto that = weak_this.lock();
+        if (that) {
+          that->TriggerOnServerDisconnected();
+        }
+      });
   socket_client_->set_fail_listener([weak_this]() {
     RTC_LOG(LS_ERROR) << "Socket.IO connection failed.";
     auto that = weak_this.lock();
@@ -161,6 +171,8 @@ void ConferenceSocketSignalingChannel::Connect(
         // fail (fail listener).
         that->is_reconnection_ = true;
         that->reconnection_attempted_++;
+        if (that->reconnection_attempted_ == 1)
+          that->TriggerOnServerReconnecting();
       }
     }
   });
@@ -275,6 +287,7 @@ void ConferenceSocketSignalingChannel::Connect(
             }
             RTC_LOG(LS_VERBOSE) << "Reconnection success";
             DrainQueuedMessages();
+            TriggerOnServerReconnected();
           });
     }
   });
@@ -731,6 +744,16 @@ void ConferenceSocketSignalingChannel::TriggerOnServerDisconnected() {
   disconnect_complete_ = nullptr;
   for (auto it = observers_.begin(); it != observers_.end(); ++it) {
     (*it)->OnServerDisconnected();
+  }
+}
+void ConferenceSocketSignalingChannel::TriggerOnServerReconnecting() {
+  for (auto it = observers_.begin(); it != observers_.end(); ++it) {
+    (*it)->OnServerReconnecting();
+  }
+}
+void ConferenceSocketSignalingChannel::TriggerOnServerReconnected() {
+  for (auto it = observers_.begin(); it != observers_.end(); ++it) {
+    (*it)->OnServerReconnected();
   }
 }
 void ConferenceSocketSignalingChannel::Emit(

@@ -484,7 +484,7 @@ LocalStream::LocalStream(const bool is_audio_enabled,
 }
 void LocalStream::Close() {
   RTC_CHECK(media_stream_);
-  DetachVideoRenderer();
+  // DetachVideoRenderer();
   for (auto const& audio_track : media_stream_->GetAudioTracks())
     media_stream_->RemoveTrack(audio_track);
   for (auto const& video_track : media_stream_->GetVideoTracks())

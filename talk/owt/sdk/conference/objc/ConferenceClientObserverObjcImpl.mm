@@ -100,5 +100,15 @@ void ConferenceClientObserverObjcImpl::OnServerDisconnected() {
     [delegate_ conferenceClientDidDisconnect:client_];
   }
 }
+void ConferenceClientObserverObjcImpl::OnServerReconnecting() {
+  if ([delegate_ respondsToSelector:@selector(conferenceClientDidReconnecting:)]) {
+    [delegate_ conferenceClientDidReconnecting:client_];
+  }
+}
+void ConferenceClientObserverObjcImpl::OnServerReconnected() {
+  if ([delegate_ respondsToSelector:@selector(conferenceClientDidReconnected:)]) {
+    [delegate_ conferenceClientDidReconnected:client_];
+  }
+}
 }
 }

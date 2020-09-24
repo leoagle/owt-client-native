@@ -32,5 +32,12 @@ RTC_OBJC_EXPORT
   does not support setting attributes.
 */
 - (void)setAttributes:(NSDictionary<NSString*, NSString*>*)attributes;
+
+-(void)close;
+
+-(void)stopCapture;
+
+-(void)switchCamera;
+
 @end
 NS_ASSUME_NONNULL_END

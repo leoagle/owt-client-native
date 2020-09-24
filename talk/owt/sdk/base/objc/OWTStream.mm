@@ -30,7 +30,13 @@
   if ([_mediaStream.videoTracks count] == 0)
     return;
   [[_mediaStream.videoTracks objectAtIndex:0] addRenderer:renderer];
-  NSLog(@"Attached stream.");
+  NSLog(@"Attached stream %@", [NSString stringWithCString:nativeStream->Id().c_str() encoding:[NSString defaultCStringEncoding]]);
+}
+- (void)detach {
+  auto nativeStream = [self nativeStream];
+  if (nativeStream != nullptr) {
+    _nativeStream->DetachVideoRenderer();
+  }
 }
 - (NSDictionary<NSString*, NSString*>*)attributes {
   NSMutableDictionary<NSString*, NSString*>* attrs =

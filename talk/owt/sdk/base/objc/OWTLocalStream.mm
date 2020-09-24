@@ -17,6 +17,10 @@
 #include "webrtc/rtc_base/helpers.h"
 @interface OWTLocalStream ()
 - (NSString*)createRandomUuid;
+@property(nonatomic, retain) NSArray<AVCaptureDevice*>* currentDevices;
+@property(nonatomic, retain) AVCaptureDeviceFormat* currentFormat;
+@property NSUInteger currentFPS;
+@property NSInteger currentPosition;
 @end
 @implementation OWTLocalStream
 - (instancetype)initWithMediaStream:(RTCMediaStream*)mediaStream
@@ -113,7 +117,18 @@
       }
       return nil;
     }
-    [capturer startCaptureWithDevice:device format:selectedFormat fps:fps];
+    [capturer startCaptureWithDevice:device format:selectedFormat fps:fps 
+      completionHandler:^(NSError* error) {
+        if (error) {
+            NSLog(@"capture camera error: %@", [error localizedDescription]);
+            [capturer stopCapture];
+        } else {
+          self.currentFormat = selectedFormat;
+          self.currentFPS = fps;
+          self.currentPosition = constraints.video.devicePosition;
+          self.currentDevices = captureDevices;
+        }
+    }];
     RTCVideoTrack* track =
         [factory videoTrackWithSource:source trackId:[self createRandomUuid]];
     [stream addVideoTrack:track];
@@ -153,5 +168,46 @@
     [cameraVideoCapturer stopCapture];
   }
   _capturer = nil;
+}
+-(void)stopCapture {
+  if (_capturer && [_capturer isKindOfClass:[RTCCameraVideoCapturer class]]) {
+    RTCCameraVideoCapturer* rtcCapture = (RTCCameraVideoCapturer*)_capturer;
+    [rtcCapture stopCaptureWithCompletionHandler:^(void) {
+      NSLog(@"camera capture stopped");
+    }];
+  }
+  _capturer = nil;
+}
+-(void)close {
+  auto localStream = [self nativeLocalStream];
+  localStream->DisableVideo();
+  localStream->DisableAudio();
+  localStream->Close();
+}
+-(void)switchCamera {
+  if (_capturer && [_capturer isKindOfClass:[RTCCameraVideoCapturer class]]) {
+    RTCCameraVideoCapturer* rtcCapture = (RTCCameraVideoCapturer*)_capturer;
+    [rtcCapture stopCaptureWithCompletionHandler:^(void) {      
+      if (self.currentPosition == AVCaptureDevicePositionFront) {
+        self.currentPosition = AVCaptureDevicePositionBack;
+      } else {
+        self.currentPosition = AVCaptureDevicePositionFront;
+      }
+      AVCaptureDevice* device = self.currentDevices[0];
+      for (AVCaptureDevice* d in self.currentDevices) {
+        if (d.position == self.currentPosition) {
+          device = d;
+          break;
+        }
+      }
+      [rtcCapture startCaptureWithDevice:device format:self.currentFormat fps:self.currentFPS 
+        completionHandler:^(NSError* error) {
+          if (error) {
+            NSLog(@"switch camera error: %@", [error localizedDescription]);
+            [rtcCapture stopCapture];
+          }
+        }];
+    }];
+  }
 }
 @end

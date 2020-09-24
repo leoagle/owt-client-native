@@ -842,6 +842,17 @@ void ConferenceClient::OnStreamRemoved(sio::message::ptr stream) {
 void ConferenceClient::OnStreamUpdated(sio::message::ptr stream) {
   TriggerOnStreamUpdated(stream);
 }
+void ConferenceClient::OnServerReconnecting() {
+  for (auto its = observers_.begin(); its != observers_.end(); ++its) {
+    (*its).get().OnServerReconnecting();
+  }
+}
+void ConferenceClient::OnServerReconnected() {
+  signaling_channel_connected_ = true;
+  for (auto its = observers_.begin(); its != observers_.end(); ++its) {
+    (*its).get().OnServerReconnected();
+  }
+}
 // ConferencePeerConnectionChannel observer implemenation.
 void ConferenceClient::OnStreamError(sio::message::ptr stream) {
   if (stream == nullptr || stream->get_flag() != sio::message::flag_object ||

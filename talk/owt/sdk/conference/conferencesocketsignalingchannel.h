@@ -109,6 +109,8 @@ class ConferenceSocketSignalingChannel
   void OnReconnectionTicket(const std::string& ticket);
   void RefreshReconnectionTicket();
   void TriggerOnServerDisconnected();
+  void TriggerOnServerReconnecting();
+  void TriggerOnServerReconnected();
   void Emit(const std::string& name,
             const sio::message::list& message,
             const std::function<void(sio::message::list const&)> ack,

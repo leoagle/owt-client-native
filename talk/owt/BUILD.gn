@@ -321,7 +321,7 @@ if (is_ios) {
       "sdk/base/objc/OWTRemoteStream.mm",
       "sdk/base/objc/OWTStream+Internal.h",
       "sdk/base/objc/OWTStream.mm",
-      "sdk/base/objc/ObjcVideoCapturerInterface",
+      "sdk/base/objc/ObjcVideoCapturerInterface.h",
       "sdk/base/objc/ObjcVideoCodecFactory.h",
       "sdk/base/objc/ObjcVideoCodecFactory.mm",
       "sdk/base/objc/RTCPeerConnectionFactory+OWT.h",
