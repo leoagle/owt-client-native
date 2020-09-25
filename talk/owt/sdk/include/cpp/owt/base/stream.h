@@ -209,6 +209,7 @@ class LocalStream : public Stream {
       const bool is_audio_enabled,
       webrtc::VideoTrackSourceInterface* video_source,
       int& error_code);
+#if defined(WEBRTC_WIN) || defined(WEBRTC_LINUX)
   /**
     @brief Initialize a LocalCustomizedStream with parameters and frame
     generator.
@@ -237,6 +238,8 @@ class LocalStream : public Stream {
   static std::shared_ptr<LocalStream> Create(
       std::shared_ptr<LocalCustomizedStreamParameters> parameters,
       VideoEncoderInterface* encoder);
+#endif
+#if defined(WEBRTC_WIN)
   /**
     @brief Initialize a local screen stream with parameters.
     @param parameters Parameters for creating the stream. The stream will
@@ -248,24 +251,29 @@ class LocalStream : public Stream {
   static std::shared_ptr<LocalStream> Create(
       std::shared_ptr<LocalDesktopStreamParameters> parameters,
       std::unique_ptr<LocalScreenStreamObserver> observer);
-
+#endif
  protected:
   explicit LocalStream(const LocalCameraStreamParameters& parameters,
                        int& error_code);
   explicit LocalStream(const bool is_audio_enabled,
                        webrtc::VideoTrackSourceInterface* video_source,
                        int& error_code);
+#if defined(WEBRTC_WIN) || defined(WEBRTC_LINUX)
   explicit LocalStream(
       std::shared_ptr<LocalCustomizedStreamParameters> parameters,
       std::unique_ptr<VideoFrameGeneratorInterface> framer);
   explicit LocalStream(
       std::shared_ptr<LocalCustomizedStreamParameters> parameters,
       VideoEncoderInterface* encoder);
+#endif
+#if defined(WEBRTC_WIN)
   explicit LocalStream(std::shared_ptr<LocalDesktopStreamParameters> parameters,
                        std::unique_ptr<LocalScreenStreamObserver> observer);
-
+#endif
  private:
+#if defined(WEBRTC_WIN) || defined(WEBRTC_LINUX)
   bool encoded_ = false;
+#endif
 #if defined(WEBRTC_MAC)
   std::unique_ptr<ObjcVideoCapturerInterface> capturer_;
 #endif

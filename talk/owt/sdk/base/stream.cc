@@ -366,6 +366,7 @@ std::shared_ptr<LocalStream> LocalStream::Create(
   return stream;
 }
 #endif
+#if defined(WEBRTC_WIN) || defined(WEBRTC_LINUX)
 std::shared_ptr<LocalStream> LocalStream::Create(
     std::shared_ptr<LocalCustomizedStreamParameters> parameters,
     std::unique_ptr<VideoFrameGeneratorInterface> framer) {
@@ -379,6 +380,7 @@ std::shared_ptr<LocalStream> LocalStream::Create(
   std::shared_ptr<LocalStream> stream(new LocalStream(parameters, encoder));
   return stream;
 }
+#endif
 LocalStream::LocalStream(const LocalCameraStreamParameters& parameters,
                          int& error_code) {
   if (!parameters.AudioEnabled() && !parameters.VideoEnabled()) {
@@ -525,6 +527,7 @@ LocalStream::LocalStream(
   source_.video = VideoSourceInfo::kScreenCast;
 }
 #endif
+#if defined(WEBRTC_WIN) || defined(WEBRTC_LINUX)
 LocalStream::LocalStream(
     std::shared_ptr<LocalCustomizedStreamParameters> parameters,
     std::unique_ptr<VideoFrameGeneratorInterface> framer) {
@@ -591,7 +594,7 @@ LocalStream::LocalStream(
   media_stream_ = stream;
   media_stream_->AddRef();
 }
-
+#endif
 RemoteStream::RemoteStream(MediaStreamInterface* media_stream,
                            const std::string& from)
     : origin_(from) {
