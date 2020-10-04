@@ -941,7 +941,7 @@ void ConferencePeerConnectionChannel::SendPublishMessage(
       on_failure);
 }
 void ConferencePeerConnectionChannel::OnNetworksChanged() {
-  RTC_LOG(LS_INFO) << "ConferencePeerConnectionChannel::OnNetworksChanged";
+  RTC_LOG(LS_WARNING) << "ConferencePeerConnectionChannel::OnNetworksChanged";
 }
 void ConferencePeerConnectionChannel::OnStreamError(
     const std::string& error_message) {

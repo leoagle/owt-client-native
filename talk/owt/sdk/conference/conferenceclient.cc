@@ -823,6 +823,9 @@ void ConferenceClient::OnSignalingMessage(sio::message::ptr message) {
   } else if (soac_status->get_string() == "error") {
     sio::message::ptr failure_msg = sio::string_message::create("failure");
     pcc->OnSignalingMessage(failure_msg);
+    auto soac_data = message->get_map()["data"];
+    if (soac_data != nullptr)
+      RTC_LOG(LS_WARNING) << "soac status error: " << soac_data->get_string();
     return;
   }
   auto soac_data = message->get_map()["data"];
@@ -840,7 +843,7 @@ void ConferenceClient::OnStreamRemoved(sio::message::ptr stream) {
   TriggerOnStreamRemoved(stream);
 }
 void ConferenceClient::OnStreamUpdated(sio::message::ptr stream) {
-  TriggerOnStreamUpdated(stream);
+  // TriggerOnStreamUpdated(stream);
 }
 void ConferenceClient::OnServerReconnecting() {
   for (auto its = observers_.begin(); its != observers_.end(); ++its) {
@@ -1406,12 +1409,7 @@ ConferenceClient::GetPeerConnectionChannelConfiguration() const {
     ice_servers.push_back(ice_server);
   }
   config.servers = ice_servers;
-  config.candidate_network_policy =
-      (configuration_.candidate_network_policy ==
-       ClientConfiguration::CandidateNetworkPolicy::kLowCost)
-          ? webrtc::PeerConnectionInterface::CandidateNetworkPolicy::
-                kCandidateNetworkPolicyLowCost
-          : webrtc::PeerConnectionInterface::CandidateNetworkPolicy::
+  config.candidate_network_policy = PeerConnectionInterface::CandidateNetworkPolicy::
                 kCandidateNetworkPolicyAll;
   config.continual_gathering_policy =
       PeerConnectionInterface::ContinualGatheringPolicy::GATHER_CONTINUALLY;

@@ -66,7 +66,7 @@ const std::string kEventNameConnectionFailed = "connection_failed";
 const uint64_t kMachLinuxTimeDelta = 978307200;
 #endif
 const int kReconnectionAttempts = 10;
-const int kReconnectionDelay = 2000;
+const int kReconnectionDelay = 0;
 ConferenceSocketSignalingChannel::ConferenceSocketSignalingChannel()
     : socket_client_(new sio::client()),
       reconnection_ticket_(""),
@@ -146,7 +146,7 @@ void ConferenceSocketSignalingChannel::Connect(
       });
   socket_client_->set_close_listener(
       [weak_this](sio::client::close_reason const& reason) {
-        RTC_LOG(LS_INFO) << "Socket.IO disconnected " << reason;
+        RTC_LOG(LS_INFO) << "Socket.IO disconnecting " << (reason==0?"normal":"drop");
         auto that = weak_this.lock();
         if (that) {
           that->TriggerOnServerDisconnected();
@@ -242,8 +242,7 @@ void ConferenceSocketSignalingChannel::Connect(
              // At present client SDK will only save reconnection ticket and participantid
              // and ignoring other info.
              sio::message::ptr message = msg.at(1);
-             auto reconnection_ticket_ptr =
-                 message->get_map()["reconnectionTicket"];
+             auto reconnection_ticket_ptr = message->get_map()["reconnectionTicket"];
              if (reconnection_ticket_ptr) {
                OnReconnectionTicket(reconnection_ticket_ptr->get_string());
              }
@@ -672,7 +671,7 @@ void ConferenceSocketSignalingChannel::OnEmitAck(
 }
 void ConferenceSocketSignalingChannel::OnReconnectionTicket(
     const std::string& ticket) {
-  RTC_LOG(LS_VERBOSE) << "On reconnection ticket: " << ticket;
+  RTC_LOG(LS_INFO) << "On reconnection ticket: " << ticket;
   reconnection_ticket_ = ticket;
   uint64_t now(0);
 // rtc::TimeMillis() seems not work well on iOS. It returns half of the actual
@@ -704,7 +703,7 @@ void ConferenceSocketSignalingChannel::OnReconnectionTicket(
           << "Reconnection ticket expiration time is earlier than now.";
       delay = 5 * 60 * 1000;  // Set delay to 5 mins.
     }
-    RTC_LOG(LS_VERBOSE) << "Reconnection ticket will expire in: " << delay / 1000
+    RTC_LOG(LS_INFO) << "Reconnection ticket will expire in: " << delay / 1000
                     << "seconds";
     std::weak_ptr<ConferenceSocketSignalingChannel> weak_this =
         shared_from_this();
