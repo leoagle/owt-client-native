@@ -258,6 +258,13 @@ PlayPauseFailureCallback(FailureBlock on_failure,
   }
   _delegate = delegate;
 }
+- (NSString*)GetUserId:(NSString*)username {
+  return [NSString stringForStdString:_nativeConferenceClient->GetUserId([username UTF8String])];
+}
+- (NSString*)GetUserName:(NSString*)userid {
+  return [NSString stringForStdString:_nativeConferenceClient->GetUserName([userid UTF8String])];
+}
+
 @end
 @implementation OWTConferenceClient (Internal)
 - (OWTLocalStream*)publishedStreamWithId:(NSString*)streamId {

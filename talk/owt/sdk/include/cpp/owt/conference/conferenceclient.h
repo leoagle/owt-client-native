@@ -114,6 +114,7 @@ class ConferenceInfo {
     std::shared_ptr<Participant> Self() const {
       return self_;
     }
+    std::string GetUserInfo(const std::string& str, bool bName);
    protected:
     // Add participant.
     void AddParticipant(std::shared_ptr<Participant> participant);
@@ -303,6 +304,10 @@ class ConferenceClient final
       const std::string& receiver,
       std::function<void()> on_success,
       std::function<void(std::unique_ptr<Exception>)> on_failure);
+
+  std::string GetUserId(const std::string& username);
+  std::string GetUserName(const std::string& userid);
+  
  protected:
   ConferenceClient(const ConferenceClientConfiguration& configuration);
   // Implementing ConferenceSocketSignalingChannelObserver.

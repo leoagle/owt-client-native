@@ -70,6 +70,10 @@ RTC_OBJC_EXPORT
 */
 - (void)leaveWithOnSuccess:(nullable void (^)())onSuccess
                  onFailure:(nullable void (^)(NSError*))onFailure;
+
+- (NSString*)GetUserId:(NSString*)username; 
+- (NSString*)GetUserName:(NSString*)userid; 
+
 @property(nonatomic, weak) id<OWTConferenceClientDelegate> delegate;
 @end
 /// Delegate for OWTConferenceClient.

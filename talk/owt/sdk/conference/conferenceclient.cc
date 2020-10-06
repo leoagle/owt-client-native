@@ -156,6 +156,21 @@ void ConferenceInfo::TriggerOnStreamMuteOrUnmute(
     }
   }
 }
+std::string ConferenceInfo::GetUserInfo(const std::string& str, bool bName) {
+  std::string result = "";
+  const std::lock_guard<std::mutex> lock(participants_mutex_);
+  for (auto& it : participants_) {
+    if (bName && it->UserId() == str) {
+      result = it->Id();
+      break;
+    } else if (!bName && it->Id() == str) {
+      result = it->UserId();
+      break;
+    }
+  }
+  return result;
+}
+
 enum ConferenceClient::StreamType : int {
   kStreamTypeCamera = 1,
   kStreamTypeScreen,
@@ -1562,6 +1577,12 @@ std::function<void()> ConferenceClient::RunInEventQueue(
       return;
     that->event_queue_->PostTask([func] { func(); });
   };
+}
+std::string ConferenceClient::GetUserId(const std::string& username) {
+  return current_conference_info_->GetUserInfo(username, true);
+}
+std::string ConferenceClient::GetUserName(const std::string& userid) {
+  return current_conference_info_->GetUserInfo(userid, false);
 }
 }  // namespace conference
 }  // namespace owt
