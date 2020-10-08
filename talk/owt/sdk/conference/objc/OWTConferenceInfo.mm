@@ -36,12 +36,11 @@
   for (const auto& nativeStream : nativeStreams) {
     if (nativeStream->Source().audio == owt::base::AudioSourceInfo::kMixed &&
         nativeStream->Source().video == owt::base::VideoSourceInfo::kMixed) {
-      OWTRemoteMixedStream* stream =
-          [[OWTRemoteMixedStream alloc] initWithNativeStream:nativeStream];
-      [streams addObject:stream];
+      // OWTRemoteMixedStream* stream =
+      //     [[OWTRemoteMixedStream alloc] initWithNativeStream:nativeStream];
+      // [streams addObject:stream];
     } else {
-      OWTRemoteStream* stream =
-          [[OWTRemoteStream alloc] initWithNativeStream:nativeStream];
+      OWTRemoteStream* stream = [[OWTRemoteStream alloc] initWithNativeStream:nativeStream];
       [streams addObject:stream];
     }
   }
